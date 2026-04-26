@@ -3,9 +3,11 @@
 /// @author StarterApp Development Team
 /// @date 2025
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StarterApp.Database.Models;
+using StarterApp.Models.Api;
 using StarterApp.Services;
 
 namespace StarterApp.ViewModels;
@@ -20,6 +22,8 @@ public partial class MainViewModel : BaseViewModel
     
     /// @brief Navigation service for managing page navigation
     private readonly INavigationService _navigationService;
+
+    private readonly IItemService _itemService;
 
     /// @brief The currently authenticated user
     /// @details Observable property containing the current user's information
@@ -36,25 +40,28 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private bool isAdmin;
 
-    /// @brief Default constructor for design-time support
-    /// @details Sets the title to "Dashboard"
-    public MainViewModel()
-        {
-            // Default constructor for design time support
-            Title = "Dashboard";
-        }
+    [ObservableProperty]
+    private string itemsSummary = "Loading items...";
+
+    public ObservableCollection<ItemSummaryDto> Items { get; } = new();
     
     /// @brief Initializes a new instance of the MainViewModel class
     /// @param authService The authentication service instance
     /// @param navigationService The navigation service instance
     /// @details Sets up the required services, initializes the title, and loads user data
-    public MainViewModel(IAuthenticationService authService, INavigationService navigationService)
+    public MainViewModel(
+        IAuthenticationService authService,
+        INavigationService navigationService,
+        IItemService itemService)
     {
         _authService = authService;
         _navigationService = navigationService;
+        _itemService = itemService;
+
         Title = "Dashboard";
 
         LoadUserData();
+        _ = RefreshDataAsync();
     }
 
     /// @brief Loads the current user's data and sets up the dashboard
@@ -63,10 +70,14 @@ public partial class MainViewModel : BaseViewModel
     {
         CurrentUser = _authService.CurrentUser;
         IsAdmin = _authService.HasRole("Admin");
-        
+
         if (CurrentUser != null)
         {
             WelcomeMessage = $"Welcome, {CurrentUser.FullName}!";
+        }
+        else
+        {
+            WelcomeMessage = "Welcome!";
         }
     }
 
@@ -76,10 +87,10 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private async Task LogoutAsync()
     {
-        var result = await Application.Current.MainPage.DisplayAlert(
-            "Logout", 
-            "Are you sure you want to logout?", 
-            "Yes", 
+        var result = await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Logout",
+            "Are you sure you want to logout?",
+            "Yes",
             "No");
 
         if (result)
@@ -132,13 +143,33 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             IsBusy = true;
+            ClearError();
+
             LoadUserData();
-            
-            // Simulate refresh delay
-            await Task.Delay(1000);
+
+            var result = await _itemService.GetItemsAsync(page: 1, pageSize: 20);
+
+            Items.Clear();
+
+            if (result?.Items != null)
+            {
+                foreach (var item in result.Items)
+                {
+                    Items.Add(item);
+                }
+
+                ItemsSummary = $"{result.TotalItems} item(s) available";
+            }
+            else
+            {
+                ItemsSummary = "Could not load items";
+                SetError("Failed to load items from the API.");
+            }
         }
         catch (Exception ex)
         {
+            Items.Clear();
+            ItemsSummary = "Could not load items";
             SetError($"Failed to refresh data: {ex.Message}");
         }
         finally
