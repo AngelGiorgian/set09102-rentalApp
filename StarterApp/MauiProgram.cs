@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using StarterApp.ViewModels;
 using StarterApp.Database.Data;
 using StarterApp.Views;
-using System.Diagnostics;
 using StarterApp.Services;
 
 namespace StarterApp;
@@ -20,7 +19,14 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        
         builder.Services.AddDbContext<AppDbContext>();
+
+        builder.Services.AddSingleton(new HttpClient
+        {
+            BaseAddress = new Uri("https://set09102-api.b-davison.workers.dev"),
+            Timeout = TimeSpan.FromSeconds(30)
+        });
 
         builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
