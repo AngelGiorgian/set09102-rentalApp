@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="StarterApp.Views.ItemDetailPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding Item.Title}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+
+                    <Label Text="{Binding DailyRateText}"
+                           FontSize="18"
+                           TextColor="White" />
+
+                    <Label Text="{Binding AvailabilityText}"
+                           FontSize="14"
+                           TextColor="White"
+                           Opacity="0.9" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
+                    Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    IsVisible="{Binding HasError}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout>
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                           FontSize="14"
+                           VerticalOptions="Center"
+                           HorizontalOptions="StartAndExpand" />
+                    <Button Text="×"
+                            Command="{Binding ClearErrorCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                            FontSize="18"
+                            Padding="5"
+                            WidthRequest="30"
+                            HeightRequest="30" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+            <VerticalStackLayout Spacing="12">
+                <Label Text="Description"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+                <Label Text="{Binding Item.Description}"
+                       FontSize="15" />
+
+                <Label Text="Category"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+                <Label Text="{Binding Item.Category}"
+                       FontSize="15" />
+
+                <Label Text="Owner"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+                <Label Text="{Binding Item.OwnerName}"
+                       FontSize="15" />
+                <Label Text="{Binding OwnerRatingText}"
+                       FontSize="14" />
+
+                <Label Text="Item Rating"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+                <Label Text="{Binding RatingText}"
+                       FontSize="15" />
+            </VerticalStackLayout>
+
+            <Button Text="Back"
+                    Command="{Binding GoBackCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

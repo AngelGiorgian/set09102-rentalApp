@@ -54,4 +54,16 @@ public class ItemService : IItemService
 
         return await response.Content.ReadFromJsonAsync<ItemsResponse>(_jsonOptions);
     }
+
+    public async Task<ItemDetailDto?> GetItemByIdAsync(int itemId)
+    {
+        using var response = await _httpClient.GetAsync($"/items/{itemId}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadFromJsonAsync<ItemDetailDto>(_jsonOptions);
+    }
 }

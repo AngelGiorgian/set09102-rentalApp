@@ -7,8 +7,10 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StarterApp.Database.Models;
+using StarterApp.Views;
 using StarterApp.Models.Api;
 using StarterApp.Services;
+
 
 namespace StarterApp.ViewModels;
 
@@ -177,4 +179,20 @@ public partial class MainViewModel : BaseViewModel
             IsBusy = false;
         }
     }
+
+    [RelayCommand]
+    private async Task OpenItemDetailAsync(ItemSummaryDto? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await _navigationService.NavigateToAsync(
+            nameof(ItemDetailPage),
+            new Dictionary<string, object>
+            {
+                { "ItemId", item.Id }
+            });
+}
 }

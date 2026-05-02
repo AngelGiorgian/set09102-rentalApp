@@ -9,4 +9,6 @@ public interface IItemService
         string? search = null,
         int page = 1,
         int pageSize = 20);
+
+    Task<ItemDetailDto?> GetItemByIdAsync(int itemId);
 }
