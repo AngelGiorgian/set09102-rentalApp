@@ -194,5 +194,11 @@ public partial class MainViewModel : BaseViewModel
             {
                 { "ItemId", item.Id }
             });
-}
+    }
+
+    [RelayCommand] //nav to create new item listing
+    private async Task NavigateToCreateItemAsync()
+    {
+        await _navigationService.NavigateToAsync(nameof(CreateItemPage));
+    }
 }

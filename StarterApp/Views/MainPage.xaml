@@ -12,6 +12,8 @@
         <ToolbarItem Text="Settings"
                      Command="{Binding NavigateToSettingsCommand}"
                      IconImageSource="settings.png" />
+        <ToolbarItem Text="Add"
+             Command="{Binding NavigateToCreateItemCommand}" />
         <ToolbarItem Text="Logout"
                      Command="{Binding LogoutCommand}"
                      IconImageSource="logout.png" />

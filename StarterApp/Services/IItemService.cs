@@ -11,4 +11,8 @@ public interface IItemService
         int pageSize = 20);
 
     Task<ItemDetailDto?> GetItemByIdAsync(int itemId);
+
+    Task<(bool IsSuccess, string Message)> CreateItemAsync(CreateItemRequest request);
+
+    Task<List<CategoryDto>> GetCategoriesAsync();
 }
