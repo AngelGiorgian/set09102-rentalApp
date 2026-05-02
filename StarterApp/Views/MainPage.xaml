@@ -14,6 +14,8 @@
                      IconImageSource="settings.png" />
         <ToolbarItem Text="Add"
              Command="{Binding NavigateToCreateItemCommand}" />
+        <ToolbarItem Text="Rentals"
+             Command="{Binding NavigateToRentalsCommand}" />
         <ToolbarItem Text="Logout"
                      Command="{Binding LogoutCommand}"
                      IconImageSource="logout.png" />
@@ -91,6 +93,8 @@
                         Command="{Binding NavigateToProfileCommand}" />
                 <Button Text="Settings"
                         Command="{Binding NavigateToSettingsCommand}" />
+                <Button Text="Rentals"
+                        Command="{Binding NavigateToRentalsCommand}" />
             </HorizontalStackLayout>
 
             <CollectionView Grid.Row="4"

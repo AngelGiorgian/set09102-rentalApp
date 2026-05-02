@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="StarterApp.Views.RentalsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:api="clr-namespace:StarterApp.Models.Api"
+             Title="{Binding Title}">
+
+    <RefreshView IsRefreshing="{Binding IsBusy}"
+                 Command="{Binding RefreshDataCommand}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="16">
+
+                <Border BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
+                        Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
+                        StrokeThickness="1"
+                        Padding="15"
+                        IsVisible="{Binding HasError}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <HorizontalStackLayout>
+                        <Label Text="{Binding ErrorMessage}"
+                               TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                               FontSize="14"
+                               VerticalOptions="Center"
+                               HorizontalOptions="StartAndExpand" />
+                        <Button Text="×"
+                                Command="{Binding ClearErrorCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                                FontSize="18"
+                                Padding="5"
+                                WidthRequest="30"
+                                HeightRequest="30" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}" />
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Outgoing Rentals"
+                           FontSize="20"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding OutgoingSummary}"
+                           FontSize="13" />
+
+                    <CollectionView ItemsSource="{Binding OutgoingRentals}"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <Label Text="No outgoing rentals yet."
+                                   Padding="10" />
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="api:RentalSummaryDto">
+                                <Border Padding="16"
+                                        Margin="0,0,0,10"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                                        StrokeThickness="1"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+
+                                    <VerticalStackLayout Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Text="{Binding ItemTitle}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding StatusText}"
+                                                   FontSize="14"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" />
+                                        </Grid>
+
+                                        <Label Text="{Binding DateRangeText}" FontSize="14" />
+                                        <Label Text="{Binding TotalPriceText}" FontSize="14" />
+                                        <Label Text="{Binding OwnerName, StringFormat='Owner: {0}'}" FontSize="13" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Incoming Rentals"
+                           FontSize="20"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding IncomingSummary}"
+                           FontSize="13" />
+
+                    <CollectionView ItemsSource="{Binding IncomingRentals}"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <Label Text="No incoming rentals yet."
+                                   Padding="10" />
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="api:RentalSummaryDto">
+                                <Border Padding="16"
+                                        Margin="0,0,0,10"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                                        StrokeThickness="1"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+
+                                    <VerticalStackLayout Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Text="{Binding ItemTitle}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding StatusText}"
+                                                   FontSize="14"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" />
+                                        </Grid>
+
+                                        <Label Text="{Binding DateRangeText}" FontSize="14" />
+                                        <Label Text="{Binding TotalPriceText}" FontSize="14" />
+                                        <Label Text="{Binding BorrowerName, StringFormat='Borrower: {0}'}" FontSize="13" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <Button Text="Back"
+                        Command="{Binding GoBackCommand}" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

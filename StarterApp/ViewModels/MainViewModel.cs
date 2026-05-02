@@ -201,4 +201,10 @@ public partial class MainViewModel : BaseViewModel
     {
         await _navigationService.NavigateToAsync(nameof(CreateItemPage));
     }
+
+    [RelayCommand]
+    private async Task NavigateToRentalsAsync()
+    {
+        await _navigationService.NavigateToAsync(nameof(RentalsPage));
+    }
 }
