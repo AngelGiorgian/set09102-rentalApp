@@ -69,6 +69,72 @@ public partial class RentalsViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task ApproveIncomingRentalAsync(RentalSummaryDto? rental)
+    {
+        await UpdateIncomingRentalStatusAsync(rental, "Approved", "approve");
+    }
+
+    [RelayCommand]
+    private async Task RejectIncomingRentalAsync(RentalSummaryDto? rental)
+    {
+        await UpdateIncomingRentalStatusAsync(rental, "Rejected", "reject");
+    }
+
+    private async Task UpdateIncomingRentalStatusAsync(RentalSummaryDto? rental, string newStatus, string actionLabel)
+    {
+        if (rental is null)
+        {
+            return;
+        }
+
+        if (!rental.IsRequested)
+        {
+            SetError("Only requested rentals can be updated here.");
+            return;
+        }
+
+        var confirm = await Application.Current!.Windows[0].Page!.DisplayAlert(
+            actionLabel == "approve" ? "Approve Rental" : "Reject Rental",
+            $"Are you sure you want to {actionLabel} this rental request?",
+            "Yes",
+            "No");
+
+        if (!confirm)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            ClearError();
+
+            var result = await _rentalService.UpdateRentalStatusAsync(rental.Id, newStatus);
+
+            if (!result.IsSuccess)
+            {
+                SetError(result.Message);
+                return;
+            }
+
+            await Application.Current!.Windows[0].Page!.DisplayAlert(
+                "Success",
+                result.Message,
+                "OK");
+
+            await RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            SetError($"Failed to update rental: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
     private async Task GoBackAsync()
     {
         await _navigationService.NavigateBackAsync();

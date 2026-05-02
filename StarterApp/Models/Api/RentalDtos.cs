@@ -15,6 +15,12 @@ public sealed class CreateRentalRequest
     public string EndDate { get; set; } = string.Empty;
 }
 
+public sealed class UpdateRentalStatusRequest
+{
+    [JsonPropertyName("status")]
+    public string Status { get; set; } = string.Empty;
+}
+
 public sealed class RentalSummaryDto
 {
     public int Id { get; set; }
@@ -38,4 +44,6 @@ public sealed class RentalSummaryDto
     public string DateRangeText => $"{StartDateText} - {EndDateText}";
     public string TotalPriceText => TotalPrice.HasValue ? $"£{TotalPrice.Value:0.00}" : "Price not available";
     public string StatusText => string.IsNullOrWhiteSpace(Status) ? "Unknown" : Status;
+
+    public bool IsRequested => string.Equals(Status, "Requested", StringComparison.OrdinalIgnoreCase);
 }

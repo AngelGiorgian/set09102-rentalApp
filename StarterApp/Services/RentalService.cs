@@ -55,6 +55,49 @@ public class RentalService : IRentalService
         }
     }
 
+    public async Task<(bool IsSuccess, string Message)> UpdateRentalStatusAsync(int rentalId, string status)
+    {
+        try
+        {
+            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return (false, "You are not logged in.");
+            }
+
+            var payload = new UpdateRentalStatusRequest
+            {
+                Status = status
+            };
+
+            using var httpRequest = new HttpRequestMessage(new HttpMethod("PATCH"), $"/rentals/{rentalId}/status");
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpRequest.Content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            using var response = await _httpClient.SendAsync(httpRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, $"Rental {status.ToLowerInvariant()} successfully.");
+            }
+
+            var raw = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrWhiteSpace(raw))
+            {
+                return (false, ExtractErrorMessage(raw));
+            }
+
+            return (false, $"Request failed: {(int)response.StatusCode} {response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Failed to update rental status: {ex.Message}");
+        }
+    }
+
     public Task<List<RentalSummaryDto>> GetOutgoingRentalsAsync()
     {
         return GetRentalsAsync("/rentals/outgoing");
