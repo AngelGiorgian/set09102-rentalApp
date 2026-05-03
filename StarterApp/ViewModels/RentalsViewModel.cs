@@ -71,31 +71,57 @@ public partial class RentalsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ApproveIncomingRentalAsync(RentalSummaryDto? rental)
     {
-        await UpdateIncomingRentalStatusAsync(rental, "Approved", "approve");
+        await UpdateIncomingRentalStatusAsync(
+            rental,
+            "Approved",
+            "Approve Rental",
+            "Are you sure you want to approve this rental request?");
     }
 
     [RelayCommand]
     private async Task RejectIncomingRentalAsync(RentalSummaryDto? rental)
     {
-        await UpdateIncomingRentalStatusAsync(rental, "Rejected", "reject");
+        await UpdateIncomingRentalStatusAsync(
+            rental,
+            "Rejected",
+            "Reject Rental",
+            "Are you sure you want to reject this rental request?");
     }
 
-    private async Task UpdateIncomingRentalStatusAsync(RentalSummaryDto? rental, string newStatus, string actionLabel)
+    [RelayCommand]
+    private async Task StartIncomingRentalAsync(RentalSummaryDto? rental)
+    {
+        await UpdateIncomingRentalStatusAsync(
+            rental,
+            "Out for Rent",
+            "Start Rental",
+            "Mark this rental as Out for Rent?");
+    }
+
+    [RelayCommand]
+    private async Task MarkIncomingReturnedAsync(RentalSummaryDto? rental)
+    {
+        await UpdateIncomingRentalStatusAsync(
+            rental,
+            "Returned",
+            "Mark Returned",
+            "Mark this rental as Returned?");
+    }
+
+    private async Task UpdateIncomingRentalStatusAsync(
+        RentalSummaryDto? rental,
+        string newStatus,
+        string dialogTitle,
+        string dialogMessage)
     {
         if (rental is null)
         {
             return;
         }
 
-        if (!rental.IsRequested)
-        {
-            SetError("Only requested rentals can be updated here.");
-            return;
-        }
-
         var confirm = await Application.Current!.Windows[0].Page!.DisplayAlert(
-            actionLabel == "approve" ? "Approve Rental" : "Reject Rental",
-            $"Are you sure you want to {actionLabel} this rental request?",
+            dialogTitle,
+            dialogMessage,
             "Yes",
             "No");
 
@@ -110,6 +136,55 @@ public partial class RentalsViewModel : BaseViewModel
             ClearError();
 
             var result = await _rentalService.UpdateRentalStatusAsync(rental.Id, newStatus);
+
+            if (!result.IsSuccess)
+            {
+                SetError(result.Message);
+                return;
+            }
+
+            await Application.Current!.Windows[0].Page!.DisplayAlert(
+                "Success",
+                result.Message,
+                "OK");
+
+            await RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            SetError($"Failed to update rental: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task MarkOutgoingReturnedAsync(RentalSummaryDto? rental)
+    {
+        if (rental is null)
+        {
+            return;
+        }
+
+        var confirm = await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Mark Returned",
+            "Mark this rental as Returned?",
+            "Yes",
+            "No");
+
+        if (!confirm)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            ClearError();
+
+            var result = await _rentalService.UpdateRentalStatusAsync(rental.Id, "Returned");
 
             if (!result.IsSuccess)
             {

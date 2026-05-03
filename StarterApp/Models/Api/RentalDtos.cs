@@ -45,5 +45,21 @@ public sealed class RentalSummaryDto
     public string TotalPriceText => TotalPrice.HasValue ? $"£{TotalPrice.Value:0.00}" : "Price not available";
     public string StatusText => string.IsNullOrWhiteSpace(Status) ? "Unknown" : Status;
 
-    public bool IsRequested => string.Equals(Status, "Requested", StringComparison.OrdinalIgnoreCase);
+    public bool IsRequested => MatchesStatus("Requested");
+    public bool IsApproved => MatchesStatus("Approved");
+    public bool IsOutForRent => MatchesStatus("Out for Rent") || MatchesStatus("OutForRent");
+    public bool IsReturned => MatchesStatus("Returned");
+
+    private bool MatchesStatus(string expected)
+    {
+        return string.Equals(
+            NormalizeStatus(Status),
+            NormalizeStatus(expected),
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeStatus(string value)
+    {
+        return value.Replace(" ", string.Empty).Trim();
+    }
 }
