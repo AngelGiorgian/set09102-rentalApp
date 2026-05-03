@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="StarterApp.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="{Binding Title}">
+
+    <!-- 
+        @brief Settings page for app/session information
+        @details Shows simple application details and allows the user to log out
+    -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Application details -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Application"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding AppName, StringFormat='Name: {0}'}" />
+                    <Label Text="{Binding ApiBaseUrl, StringFormat='API: {0}'}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Session details -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Session"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding LoggedInStatus, StringFormat='Status: {0}'}" />
+                    <Label Text="{Binding CurrentUserEmail, StringFormat='User: {0}'}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Action buttons -->
+            <Button Text="Refresh"
+                    Command="{Binding RefreshCommand}" />
+
+            <Button Text="Logout"
+                    Command="{Binding LogoutCommand}" />
+
+            <Button Text="Back"
+                    Command="{Binding NavigateBackCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

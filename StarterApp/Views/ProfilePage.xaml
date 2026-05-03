@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="StarterApp.Views.ProfilePage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="{Binding Title}">
+
+    <!-- 
+        @brief Profile page for the currently authenticated user
+        @details Displays basic user information such as name, email, roles, and account status
+    -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Profile header card -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding FullName}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+                    <Label Text="{Binding Email}"
+                           FontSize="14"
+                           TextColor="White"
+                           Opacity="0.9" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Profile details card -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Profile Details"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding FullName, StringFormat='Name: {0}'}" />
+                    <Label Text="{Binding Email, StringFormat='Email: {0}'}" />
+                    <Label Text="{Binding RolesText, StringFormat='Roles: {0}'}" />
+                    <Label Text="{Binding AccountStatusText, StringFormat='Status: {0}'}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Action buttons -->
+            <Button Text="Refresh"
+                    Command="{Binding RefreshCommand}" />
+
+            <Button Text="Back"
+                    Command="{Binding NavigateBackCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

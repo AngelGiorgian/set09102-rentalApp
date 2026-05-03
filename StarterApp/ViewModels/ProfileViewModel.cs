@@ -1,5 +1,5 @@
 /// @file ProfileViewModel.cs
-/// @brief User profile management view model
+/// @brief User profile display view model
 /// @author StarterApp Development Team
 /// @date 2025
 
@@ -11,45 +11,45 @@ using StarterApp.Services;
 namespace StarterApp.ViewModels;
 
 /// @brief View model for the user profile page
-/// @details Manages user profile display and password change functionality
+/// @details Displays the currently logged-in user's basic profile information
 /// @extends BaseViewModel
 public partial class ProfileViewModel : BaseViewModel
 {
-    /// @brief Authentication service for managing user authentication
+    /// @brief Authentication service for retrieving current user information
     private readonly IAuthenticationService _authService;
-    
-    /// @brief Navigation service for managing page navigation
+
+    /// @brief Navigation service for page navigation
     private readonly INavigationService _navigationService;
 
-    /// @brief The current user's profile information
-    /// @details Observable property containing the current user's data
+    /// @brief The current authenticated user
+    /// @details Holds the current user's raw model data
     [ObservableProperty]
     private User? currentUser;
 
-    /// @brief The user's current password for verification
-    /// @details Observable property bound to the current password input field
+    /// @brief The user's full name
+    /// @details Formatted from first name and last name
     [ObservableProperty]
-    private string currentPassword = string.Empty;
+    private string fullName = string.Empty;
 
-    /// @brief The user's new password
-    /// @details Observable property bound to the new password input field
+    /// @brief The user's email address
+    /// @details Displayed on the profile page
     [ObservableProperty]
-    private string newPassword = string.Empty;
+    private string email = string.Empty;
 
-    /// @brief Confirmation of the user's new password
-    /// @details Observable property bound to the confirm new password input field
+    /// @brief The user's role list as text
+    /// @details Comma-separated role names for display
     [ObservableProperty]
-    private string confirmNewPassword = string.Empty;
+    private string rolesText = string.Empty;
 
-    /// @brief Indicates whether the password change mode is active
-    /// @details Observable property that controls the visibility of password change fields
+    /// @brief The user's authentication/account status text
+    /// @details Indicates whether the user is authenticated
     [ObservableProperty]
-    private bool isChangingPassword;
+    private string accountStatusText = string.Empty;
 
     /// @brief Initializes a new instance of the ProfileViewModel class
     /// @param authService The authentication service instance
     /// @param navigationService The navigation service instance
-    /// @details Sets up the required services, initializes the title, and loads user data
+    /// @details Sets the page title and loads the user profile data
     public ProfileViewModel(IAuthenticationService authService, INavigationService navigationService)
     {
         _authService = authService;
@@ -60,63 +60,37 @@ public partial class ProfileViewModel : BaseViewModel
     }
 
     /// @brief Loads the current user's profile data
-    /// @details Retrieves the current user's information from the authentication service
+    /// @details Reads the logged-in user from the authentication service and formats display fields
     private void LoadUserData()
     {
         CurrentUser = _authService.CurrentUser;
+
+        if (CurrentUser is null)
+        {
+            FullName = "Unknown User";
+            Email = "Not available";
+            RolesText = "No roles";
+            AccountStatusText = "Not authenticated";
+            return;
+        }
+
+        FullName = $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim();
+        Email = CurrentUser.Email;
+        RolesText = _authService.CurrentUserRoles.Count > 0
+            ? string.Join(", ", _authService.CurrentUserRoles)
+            : "No roles";
+        AccountStatusText = _authService.IsAuthenticated ? "Authenticated" : "Not authenticated";
     }
 
-    /// @brief Changes the user's password
-    /// @details Relay command that validates and performs the password change operation
-    /// @return A task representing the asynchronous password change operation
+    /// @brief Refreshes the profile information
+    /// @details Reloads the current user's display data from the authentication service
+    /// @return A completed task after refreshing the data
     [RelayCommand]
-    private async Task ChangePasswordAsync()
+    private Task RefreshAsync()
     {
-        if (IsBusy)
-            return;
-
-        if (!ValidatePasswordChange())
-            return;
-
-        try
-        {
-            IsBusy = true;
-            ClearError();
-
-            var success = await _authService.ChangePasswordAsync(CurrentPassword, NewPassword);
-
-            if (success)
-            {
-                await Application.Current.MainPage.DisplayAlert("Success", "Password changed successfully!", "OK");
-                ClearPasswordFields();
-                IsChangingPassword = false;
-            }
-            else
-            {
-                SetError("Failed to change password. Please check your current password.");
-            }
-        }
-        catch (Exception ex)
-        {
-            SetError($"Password change failed: {ex.Message}");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    /// @brief Toggles the password change mode
-    /// @details Relay command that shows/hides password change fields and clears data when hiding
-    [RelayCommand]
-    private void TogglePasswordChangeMode()
-    {
-        IsChangingPassword = !IsChangingPassword;
-        if (!IsChangingPassword)
-        {
-            ClearPasswordFields();
-            ClearError();
-        }
+        ClearError();
+        LoadUserData();
+        return Task.CompletedTask;
     }
 
     /// @brief Navigates back to the previous page
@@ -126,52 +100,5 @@ public partial class ProfileViewModel : BaseViewModel
     private async Task NavigateBackAsync()
     {
         await _navigationService.NavigateBackAsync();
-    }
-
-    /// @brief Validates the password change form data
-    /// @return True if validation passes, false otherwise
-    /// @details Checks all password change requirements and sets appropriate error messages
-    private bool ValidatePasswordChange()
-    {
-        if (string.IsNullOrWhiteSpace(CurrentPassword))
-        {
-            SetError("Current password is required");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(NewPassword))
-        {
-            SetError("New password is required");
-            return false;
-        }
-
-        if (NewPassword.Length < 6)
-        {
-            SetError("New password must be at least 6 characters long");
-            return false;
-        }
-
-        if (NewPassword != ConfirmNewPassword)
-        {
-            SetError("New passwords do not match");
-            return false;
-        }
-
-        if (CurrentPassword == NewPassword)
-        {
-            SetError("New password must be different from current password");
-            return false;
-        }
-
-        return true;
-    }
-
-    /// @brief Clears all password input fields
-    /// @details Resets all password-related properties to empty strings
-    private void ClearPasswordFields()
-    {
-        CurrentPassword = string.Empty;
-        NewPassword = string.Empty;
-        ConfirmNewPassword = string.Empty;
     }
 }

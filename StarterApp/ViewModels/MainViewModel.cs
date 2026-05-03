@@ -103,21 +103,21 @@ public partial class MainViewModel : BaseViewModel
     }
 
     /// @brief Navigates to the user profile page
-    /// @details Relay command that navigates to the profile management page
+    /// @details Relay command that navigates to the profile page
     /// @return A task representing the asynchronous navigation operation
     [RelayCommand]
     private async Task NavigateToProfileAsync()
     {
-        await _navigationService.NavigateToAsync("TempPage");
+        await _navigationService.NavigateToAsync(nameof(ProfilePage));
     }
 
     /// @brief Navigates to the settings page
-    /// @details Relay command that navigates to the application settings page
+    /// @details Relay command that navigates to the settings page
     /// @return A task representing the asynchronous navigation operation
     [RelayCommand]
     private async Task NavigateToSettingsAsync()
     {
-        await _navigationService.NavigateToAsync("TempPage");
+        await _navigationService.NavigateToAsync(nameof(SettingsPage));
     }
 
 

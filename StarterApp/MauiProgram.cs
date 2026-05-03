@@ -48,6 +48,10 @@ public static class MauiProgram
         builder.Services.AddTransient<CreateItemPage>();
         builder.Services.AddTransient<RentalsViewModel>();
         builder.Services.AddTransient<RentalsPage>();
+        builder.Services.AddTransient<ProfileViewModel>();
+        builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddSingleton<LoginViewModel>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddSingleton<RegisterViewModel>();
