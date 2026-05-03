@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StarterApp.Models.Api;
 using StarterApp.Services;
+using StarterApp.Views;
 
 namespace StarterApp.ViewModels;
 
@@ -38,6 +39,9 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
 
     [ObservableProperty]
     private string rentalInfoMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool isOwner;
 
     public ItemDetailViewModel(
         IItemService itemService,
@@ -92,6 +96,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
             var currentUserId = _authService.CurrentUser?.Id;
             var isOwnItem = currentUserId.HasValue && currentUserId.Value == result.OwnerId;
 
+            IsOwner = isOwnItem;
             CanRequestRental = result.IsAvailable && !isOwnItem;
 
             if (!result.IsAvailable)
@@ -100,7 +105,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
             }
             else if (isOwnItem)
             {
-                RentalInfoMessage = "You cannot request your own item.";
+                RentalInfoMessage = "You own this item. You can edit it below.";
             }
             else
             {
@@ -115,6 +120,22 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task NavigateToEditItemAsync()
+    {
+        if (Item is null || !IsOwner)
+        {
+            return;
+        }
+
+        await _navigationService.NavigateToAsync(
+            nameof(CreateItemPage),
+            new Dictionary<string, object>
+            {
+                { "ItemId", Item.Id }
+            });
     }
 
     [RelayCommand]

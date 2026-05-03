@@ -146,4 +146,42 @@ public class ItemService : IItemService
             return new List<CategoryDto>();
         }
     }
+
+    public async Task<(bool IsSuccess, string Message)> UpdateItemAsync(int itemId, CreateItemRequest request)
+    {
+        try
+        {
+            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return (false, "You are not logged in.");
+            }
+
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"/items/{itemId}");
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpRequest.Content = new StringContent(
+                JsonSerializer.Serialize(request),
+                Encoding.UTF8,
+                "application/json");
+
+            using var response = await _httpClient.SendAsync(httpRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Item updated successfully.");
+            }
+
+            var errorBody = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrWhiteSpace(errorBody))
+            {
+                return (false, errorBody);
+            }
+
+            return (false, $"Request failed: {(int)response.StatusCode} {response.ReasonPhrase}");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Update item failed: {ex.Message}");
+        }
+    }
 }

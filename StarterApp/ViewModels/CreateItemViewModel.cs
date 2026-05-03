@@ -7,10 +7,12 @@ using StarterApp.Services;
 
 namespace StarterApp.ViewModels;
 
-public partial class CreateItemViewModel : BaseViewModel
+public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IItemService _itemService;
     private readonly INavigationService _navigationService;
+
+    private int? _editingItemId;
 
     [ObservableProperty]
     private string titleText = string.Empty;
@@ -33,6 +35,12 @@ public partial class CreateItemViewModel : BaseViewModel
     [ObservableProperty]
     private bool areCategoriesLoaded;
 
+    [ObservableProperty]
+    private bool isEditMode;
+
+    [ObservableProperty]
+    private string saveButtonText = "Create Item";
+
     public ObservableCollection<CategoryDto> Categories { get; } = new();
 
     public CreateItemViewModel(IItemService itemService, INavigationService navigationService)
@@ -42,6 +50,36 @@ public partial class CreateItemViewModel : BaseViewModel
         Title = "Create Item";
 
         _ = LoadCategoriesAsync();
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("ItemId", out var itemIdValue))
+        {
+            if (itemIdValue is int itemId)
+            {
+                _editingItemId = itemId;
+                IsEditMode = true;
+                Title = "Edit Item";
+                SaveButtonText = "Update Item";
+                _ = LoadExistingItemAsync(itemId);
+            }
+            else if (itemIdValue is string itemIdText && int.TryParse(itemIdText, out var parsedId))
+            {
+                _editingItemId = parsedId;
+                IsEditMode = true;
+                Title = "Edit Item";
+                SaveButtonText = "Update Item";
+                _ = LoadExistingItemAsync(parsedId);
+            }
+        }
+        else
+        {
+            _editingItemId = null;
+            IsEditMode = false;
+            Title = "Create Item";
+            SaveButtonText = "Create Item";
+        }
     }
 
     private async Task LoadCategoriesAsync()
@@ -70,6 +108,52 @@ public partial class CreateItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             SetError($"Failed to load categories: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task LoadExistingItemAsync(int itemId)
+    {
+        try
+        {
+            IsBusy = true;
+            ClearError();
+
+            if (Categories.Count == 0)
+            {
+                await LoadCategoriesAsync();
+            }
+
+            var item = await _itemService.GetItemByIdAsync(itemId);
+
+            if (item is null)
+            {
+                SetError("Failed to load item details for editing.");
+                return;
+            }
+
+            TitleText = item.Title;
+            DescriptionText = item.Description;
+            DailyRateText = item.DailyRate.ToString("0.##", CultureInfo.InvariantCulture);
+
+            if (item.Latitude.HasValue)
+            {
+                LatitudeText = item.Latitude.Value.ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (item.Longitude.HasValue)
+            {
+                LongitudeText = item.Longitude.Value.ToString(CultureInfo.InvariantCulture);
+            }
+
+            SelectedCategory = Categories.FirstOrDefault(c => c.Id == item.CategoryId);
+        }
+        catch (Exception ex)
+        {
+            SetError($"Failed to load item for editing: {ex.Message}");
         }
         finally
         {
@@ -124,7 +208,16 @@ public partial class CreateItemViewModel : BaseViewModel
                 Longitude = longitude
             };
 
-            var result = await _itemService.CreateItemAsync(request);
+            (bool IsSuccess, string Message) result;
+
+            if (IsEditMode && _editingItemId.HasValue)
+            {
+                result = await _itemService.UpdateItemAsync(_editingItemId.Value, request);
+            }
+            else
+            {
+                result = await _itemService.CreateItemAsync(request);
+            }
 
             if (!result.IsSuccess)
             {
@@ -134,14 +227,14 @@ public partial class CreateItemViewModel : BaseViewModel
 
             await Application.Current!.Windows[0].Page!.DisplayAlert(
                 "Success",
-                "Item created successfully.",
+                IsEditMode ? "Item updated successfully." : "Item created successfully.",
                 "OK");
 
             await _navigationService.NavigateBackAsync();
         }
         catch (Exception ex)
         {
-            SetError($"Failed to create item: {ex.Message}");
+            SetError($"Failed to save item: {ex.Message}");
         }
         finally
         {
@@ -159,5 +252,10 @@ public partial class CreateItemViewModel : BaseViewModel
     private async Task ReloadCategoriesAsync()
     {
         await LoadCategoriesAsync();
+
+        if (IsEditMode && _editingItemId.HasValue)
+        {
+            await LoadExistingItemAsync(_editingItemId.Value);
+        }
     }
 }

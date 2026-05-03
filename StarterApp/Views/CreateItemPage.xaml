@@ -63,8 +63,8 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}" />
 
-            <Button Text="Create Item"
-                    Command="{Binding SaveCommand}" />
+            <Button Text="{Binding SaveButtonText}"
+                        Command="{Binding SaveCommand}" />
 
             <Button Text="Cancel"
                     Command="{Binding CancelCommand}" />

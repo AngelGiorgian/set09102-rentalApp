@@ -13,6 +13,7 @@ public interface IItemService
     Task<ItemDetailDto?> GetItemByIdAsync(int itemId);
 
     Task<(bool IsSuccess, string Message)> CreateItemAsync(CreateItemRequest request);
+    Task<(bool IsSuccess, string Message)> UpdateItemAsync(int itemId, CreateItemRequest request);
 
     Task<List<CategoryDto>> GetCategoriesAsync();
 }

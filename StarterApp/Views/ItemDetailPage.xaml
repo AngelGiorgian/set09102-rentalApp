@@ -86,6 +86,10 @@
                        FontSize="15" />
             </VerticalStackLayout>
 
+            <Button Text="Edit Item"
+                     Command="{Binding NavigateToEditItemCommand}"
+                     IsVisible="{Binding IsOwner}" />
+
             <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                     Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
                     StrokeThickness="1"
