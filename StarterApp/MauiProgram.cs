@@ -4,6 +4,7 @@ using StarterApp.Database.Data;
 using StarterApp.Views;
 using StarterApp.Services;
 using StarterApp.Repositories;
+using StarterApp.Security;
 
 namespace StarterApp;
 
@@ -27,6 +28,8 @@ public static class MauiProgram
             BaseAddress = new Uri("https://set09102-api.b-davison.workers.dev"),
             Timeout = TimeSpan.FromSeconds(30)
         });
+
+        builder.Services.AddSingleton<ITokenProvider, MauiTokenProvider>();
 
         builder.Services.AddSingleton<IItemRepository, ItemRepository>();
         builder.Services.AddSingleton<IRentalRepository, RentalRepository>();

@@ -8,17 +8,19 @@ namespace StarterApp.Repositories;
 
 public class ItemRepository : IItemRepository
 {
-    private const string AuthTokenKey = "auth_token";
-
     private readonly HttpClient _httpClient;
+
+    private readonly StarterApp.Security.ITokenProvider _tokenProvider;
+
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public ItemRepository(HttpClient httpClient)
+    public ItemRepository(HttpClient httpClient, StarterApp.Security.ITokenProvider tokenProvider)
     {
         _httpClient = httpClient;
+        _tokenProvider = tokenProvider;
     }
 
     public async Task<ItemsResponse?> GetItemsAsync(
@@ -75,7 +77,7 @@ public class ItemRepository : IItemRepository
     {
         try
         {
-            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            var token = await _tokenProvider.GetTokenAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
                 return (false, "You are not logged in.");
@@ -113,7 +115,7 @@ public class ItemRepository : IItemRepository
     {
         try
         {
-            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            var token = await _tokenProvider.GetTokenAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
                 return (false, "You are not logged in.");

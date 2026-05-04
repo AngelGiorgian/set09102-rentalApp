@@ -8,20 +8,21 @@ namespace StarterApp.Repositories;
 
 public class RentalRepository : IRentalRepository
 {
-    private const string AuthTokenKey = "auth_token";
-
     private readonly HttpClient _httpClient;
 
-    public RentalRepository(HttpClient httpClient)
+    private readonly StarterApp.Security.ITokenProvider _tokenProvider;
+
+    public RentalRepository(HttpClient httpClient, StarterApp.Security.ITokenProvider tokenProvider)
     {
         _httpClient = httpClient;
+        _tokenProvider = tokenProvider;
     }
 
     public async Task<(bool IsSuccess, string Message)> RequestRentalAsync(CreateRentalRequest request)
     {
         try
         {
-            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            var token = await _tokenProvider.GetTokenAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
                 return (false, "You are not logged in.");
@@ -59,7 +60,7 @@ public class RentalRepository : IRentalRepository
     {
         try
         {
-            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            var token = await _tokenProvider.GetTokenAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
                 return (false, "You are not logged in.");
@@ -112,7 +113,7 @@ public class RentalRepository : IRentalRepository
     {
         try
         {
-            var token = await SecureStorage.Default.GetAsync(AuthTokenKey);
+            var token = await _tokenProvider.GetTokenAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
                 return new List<RentalSummaryDto>();
