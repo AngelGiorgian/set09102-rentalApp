@@ -6,6 +6,7 @@ using StarterApp.Models.Api;
 
 namespace StarterApp.Repositories;
 
+//handeles rental api calls
 public class RentalRepository : IRentalRepository
 {
     private readonly HttpClient _httpClient;
@@ -18,7 +19,8 @@ public class RentalRepository : IRentalRepository
         _tokenProvider = tokenProvider;
     }
 
-    public async Task<(bool IsSuccess, string Message)> RequestRentalAsync(CreateRentalRequest request)
+    //request rental
+    public async Task<(bool IsSuccess, string Message)> RequestRentalAsync(CreateRentalRequest request) //request rentals
     {
         try
         {
@@ -28,6 +30,7 @@ public class RentalRepository : IRentalRepository
                 return (false, "You are not logged in.");
             }
 
+            //adds auth token
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/rentals");
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             httpRequest.Content = new StringContent(
@@ -56,6 +59,7 @@ public class RentalRepository : IRentalRepository
         }
     }
 
+    //updates rental status
     public async Task<(bool IsSuccess, string Message)> UpdateRentalStatusAsync(int rentalId, string status)
     {
         try
@@ -71,6 +75,7 @@ public class RentalRepository : IRentalRepository
                 Status = status
             };
 
+            //send patch request
             using var httpRequest = new HttpRequestMessage(new HttpMethod("PATCH"), $"/rentals/{rentalId}/status");
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             httpRequest.Content = new StringContent(
@@ -99,16 +104,19 @@ public class RentalRepository : IRentalRepository
         }
     }
 
+    //gets outgoing rentals
     public Task<List<RentalSummaryDto>> GetOutgoingRentalsAsync()
     {
         return GetRentalsAsync("/rentals/outgoing");
     }
 
+    //gets incoming rentals'
     public Task<List<RentalSummaryDto>> GetIncomingRentalsAsync()
     {
         return GetRentalsAsync("/rentals/incoming");
     }
 
+    //gets rentals
     private async Task<List<RentalSummaryDto>> GetRentalsAsync(string url)
     {
         try
@@ -119,7 +127,7 @@ public class RentalRepository : IRentalRepository
                 return new List<RentalSummaryDto>();
             }
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url); //adds auth token
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             using var response = await _httpClient.SendAsync(request);
@@ -135,6 +143,7 @@ public class RentalRepository : IRentalRepository
                 return new List<RentalSummaryDto>();
             }
 
+            //handles array response
             using var document = JsonDocument.Parse(raw);
             var root = document.RootElement;
 
@@ -143,6 +152,7 @@ public class RentalRepository : IRentalRepository
                 return root.EnumerateArray().Select(MapRental).ToList();
             }
 
+            //handles the wrapped response
             if (root.ValueKind == JsonValueKind.Object)
             {
                 foreach (var propertyName in new[] { "rentals", "items", "data" })
@@ -163,6 +173,7 @@ public class RentalRepository : IRentalRepository
         }
     }
 
+    //maps the whole rental data
     private static RentalSummaryDto MapRental(JsonElement rental)
     {
         var dto = new RentalSummaryDto
@@ -179,7 +190,7 @@ public class RentalRepository : IRentalRepository
             ItemTitle = ReadString(rental, "itemTitle")
         };
 
-        if (rental.TryGetProperty("item", out var itemElement) &&
+        if (rental.TryGetProperty("item", out var itemElement) && //read nested item
             itemElement.ValueKind == JsonValueKind.Object)
         {
             if (dto.ItemId == 0)
@@ -193,14 +204,14 @@ public class RentalRepository : IRentalRepository
             }
         }
 
-        if (rental.TryGetProperty("borrower", out var borrowerElement) &&
+        if (rental.TryGetProperty("borrower", out var borrowerElement) && //read the borrower name
             borrowerElement.ValueKind == JsonValueKind.Object &&
             string.IsNullOrWhiteSpace(dto.BorrowerName))
         {
             dto.BorrowerName = BuildFullName(borrowerElement);
         }
 
-        if (rental.TryGetProperty("owner", out var ownerElement) &&
+        if (rental.TryGetProperty("owner", out var ownerElement) && //reads owner name
             ownerElement.ValueKind == JsonValueKind.Object &&
             string.IsNullOrWhiteSpace(dto.OwnerName))
         {
@@ -210,6 +221,7 @@ public class RentalRepository : IRentalRepository
         return dto;
     }
 
+    //build the full name
     private static string BuildFullName(JsonElement person)
     {
         var firstName = ReadString(person, "firstName");
@@ -224,6 +236,7 @@ public class RentalRepository : IRentalRepository
         return ReadString(person, "name");
     }
 
+    //read the string value
     private static string ReadString(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property))
@@ -236,6 +249,7 @@ public class RentalRepository : IRentalRepository
             : property.ToString();
     }
 
+    //read the integer value
     private static int ReadInt(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property))
@@ -257,6 +271,7 @@ public class RentalRepository : IRentalRepository
         return 0;
     }
 
+    //read date value
     private static DateTime? ReadDate(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property))
@@ -273,6 +288,7 @@ public class RentalRepository : IRentalRepository
         return null;
     }
 
+    //read the decimal value of json value
     private static decimal? ReadDecimalNullable(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property))
@@ -294,6 +310,7 @@ public class RentalRepository : IRentalRepository
         return null;
     }
 
+    //error message
     private static string ExtractErrorMessage(string raw)
     {
         try

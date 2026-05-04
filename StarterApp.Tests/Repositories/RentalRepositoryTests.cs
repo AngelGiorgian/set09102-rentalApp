@@ -1,7 +1,6 @@
 /// @file RentalRepositoryTests.cs
 /// @brief Unit tests for the rental repository
 /// @author StarterApp Development Team
-/// @date 2025
 
 using System.Net;
 using System.Text;
@@ -48,10 +47,10 @@ public class RentalRepositoryTests
             EndDate = "2026-05-12"
         };
 
-        // Act
+        //act
         var result = await repository.RequestRentalAsync(request);
 
-        // Assert
+        //assert
         Assert.False(result.IsSuccess);
         Assert.Equal("You are not logged in.", result.Message);
     }
@@ -61,7 +60,7 @@ public class RentalRepositoryTests
     [Fact]
     public async Task UpdateRentalStatusAsync_ReturnsSuccess_WhenApiReturnsSuccess()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = request =>
@@ -82,10 +81,10 @@ public class RentalRepositoryTests
         var tokenProvider = new FakeTokenProvider { Token = "test-token" };
         var repository = CreateRepository(handler, tokenProvider);
 
-        // Act
+        //act
         var result = await repository.UpdateRentalStatusAsync(25, "Approved");
 
-        // Assert
+        //assert
         Assert.True(result.IsSuccess);
         Assert.Equal("Rental approved successfully.", result.Message);
     }
@@ -95,7 +94,7 @@ public class RentalRepositoryTests
     [Fact]
     public async Task GetIncomingRentalsAsync_MapsNestedObjectsCorrectly()
     {
-        // Arrange
+        ///arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = request =>
@@ -139,10 +138,10 @@ public class RentalRepositoryTests
         var tokenProvider = new FakeTokenProvider { Token = "test-token" };
         var repository = CreateRepository(handler, tokenProvider);
 
-        // Act
+        //act
         var result = await repository.GetIncomingRentalsAsync();
 
-        // Assert
+        //assert
         Assert.Single(result);
 
         var rental = result[0];
@@ -161,7 +160,7 @@ public class RentalRepositoryTests
     [Fact]
     public async Task GetOutgoingRentalsAsync_ReturnsRentals_WhenResponseContainsRentalsProperty()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = request =>
@@ -198,10 +197,10 @@ public class RentalRepositoryTests
         var tokenProvider = new FakeTokenProvider { Token = "test-token" };
         var repository = CreateRepository(handler, tokenProvider);
 
-        // Act
+        //act
         var result = await repository.GetOutgoingRentalsAsync();
 
-        // Assert
+        //assert
         Assert.Single(result);
 
         var rental = result[0];
@@ -219,7 +218,7 @@ public class RentalRepositoryTests
     [Fact]
     public async Task RequestRentalAsync_ReturnsApiErrorMessage_WhenApiRequestFails()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = request =>
@@ -252,10 +251,10 @@ public class RentalRepositoryTests
             EndDate = "2026-05-19"
         };
 
-        // Act
+        //act
         var result = await repository.RequestRentalAsync(request);
 
-        // Assert
+        //assert
         Assert.False(result.IsSuccess);
         Assert.Equal("End date must be after start date", result.Message);
     }

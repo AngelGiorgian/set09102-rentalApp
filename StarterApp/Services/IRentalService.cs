@@ -2,6 +2,7 @@ using StarterApp.Models.Api;
 
 namespace StarterApp.Services;
 
+//rental service contract
 public interface IRentalService
 {
     Task<(bool IsSuccess, string Message)> RequestRentalAsync(CreateRentalRequest request);

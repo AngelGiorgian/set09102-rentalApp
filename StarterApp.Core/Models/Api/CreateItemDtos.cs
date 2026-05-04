@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace StarterApp.Models.Api;
 
+//create item api  request
 public sealed class CreateItemRequest
 {
     [JsonPropertyName("title")]
@@ -23,6 +24,7 @@ public sealed class CreateItemRequest
     public double Longitude { get; set; }
 }
 
+//create item api response
 public sealed class CreateItemResponse
 {
     [JsonPropertyName("id")]

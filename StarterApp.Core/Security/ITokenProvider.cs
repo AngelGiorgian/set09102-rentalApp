@@ -1,7 +1,7 @@
 /// @file ITokenProvider.cs
 /// @brief Token provider abstraction for accessing authentication tokens
 /// @author StarterApp Development Team
-/// @date 2025
+
 
 namespace StarterApp.Security;
 

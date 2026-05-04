@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace StarterApp.Models.Api;
 
+//item summary api model
 public sealed class ItemSummaryDto
 {
     [JsonPropertyName("id")]
@@ -43,12 +44,13 @@ public sealed class ItemSummaryDto
     [JsonPropertyName("createdAt")]
     public DateTime? CreatedAt { get; set; }
 
+    //fomatted data
     public string DailyRateText => $"£{DailyRate:0.00}/day";
     public string AvailabilityText => IsAvailable ? "Available" : "Unavailable";
     public string RatingText => AverageRating.HasValue ? $"★ {AverageRating.Value:0.0}" : "No ratings";
 }
 
-public sealed class ItemsResponse
+public sealed class ItemsResponse //paged items api response
 {
     [JsonPropertyName("items")]
     public List<ItemSummaryDto> Items { get; set; } = new();

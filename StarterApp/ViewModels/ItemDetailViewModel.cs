@@ -6,6 +6,7 @@ using StarterApp.Views;
 
 namespace StarterApp.ViewModels;
 
+//handles item details screen logic
 public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IItemService _itemService;
@@ -56,6 +57,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
         Title = "Item Details";
     }
 
+    //gets item id from navigation
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("ItemId", out var itemIdValue))
@@ -71,6 +73,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //loads item details
     private async Task LoadItemAsync(int itemId)
     {
         try
@@ -93,12 +96,14 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
             RatingText = result.RatingText;
             OwnerRatingText = result.OwnerRatingText;
 
+            //checks ownership
             var currentUserId = _authService.CurrentUser?.Id;
             var isOwnItem = currentUserId.HasValue && currentUserId.Value == result.OwnerId;
 
             IsOwner = isOwnItem;
             CanRequestRental = result.IsAvailable && !isOwnItem;
 
+            //sets rental message
             if (!result.IsAvailable)
             {
                 RentalInfoMessage = "This item is currently unavailable for rental.";
@@ -122,6 +127,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //opens edit item page
     [RelayCommand]
     private async Task NavigateToEditItemAsync()
     {
@@ -138,6 +144,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
             });
     }
 
+    //submits rental request
     [RelayCommand]
     private async Task RequestRentalAsync()
     {
@@ -160,12 +167,14 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
             var startDate = RentalStartDate.Date;
             var endDate = RentalEndDate.Date;
 
+            //checks start date
             if (startDate < DateTime.Today)
             {
                 SetError("Start date cannot be in the past.");
                 return;
             }
 
+            //checks end date
             if (endDate <= startDate)
             {
                 SetError("End date must be after the start date.");
@@ -174,6 +183,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
 
             IsBusy = true;
 
+            //builds rental request
             var request = new CreateRentalRequest
             {
                 ItemId = Item.Id,
@@ -204,6 +214,7 @@ public partial class ItemDetailViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //goes back
     [RelayCommand]
     private async Task GoBackAsync()
     {

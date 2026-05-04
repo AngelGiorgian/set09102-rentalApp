@@ -2,6 +2,7 @@
 
 namespace StarterApp;
 
+//main app setup
 public partial class App : Application
 {
 	private readonly IServiceProvider _serviceProvider;
@@ -9,7 +10,7 @@ public partial class App : Application
 	{
 		_serviceProvider = serviceProvider;
 		InitializeComponent();
-
+		//app routess
 		Routing.RegisterRoute(nameof(Views.MainPage), typeof(Views.MainPage));
 		Routing.RegisterRoute(nameof(Views.LoginPage), typeof(Views.LoginPage));
 		Routing.RegisterRoute(nameof(Views.RegisterPage), typeof(Views.RegisterPage));
@@ -18,7 +19,7 @@ public partial class App : Application
 		Routing.RegisterRoute(nameof(Views.TempPage), typeof(Views.TempPage));
 	}
 
-	protected override Window CreateWindow(IActivationState? activationState)
+	protected override Window CreateWindow(IActivationState? activationState) //creates main app window
 	{
 		// var window = base.CreateWindow(activationState);
 		// window.Page = new AppShell();
@@ -26,7 +27,7 @@ public partial class App : Application
 		var shell = _serviceProvider.GetService<AppShell>();
 		if (shell == null)
 		{
-			// Handle the error if AppShell could not be resolved
+			//handle the error if appshell not resolved
 			throw new InvalidOperationException("AppShell could not be resolved from the service provider.");
 		}
 		var window = new Window(shell);

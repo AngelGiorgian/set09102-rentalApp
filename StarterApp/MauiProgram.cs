@@ -8,6 +8,7 @@ using StarterApp.Security;
 
 namespace StarterApp;
 
+//configure the maui app
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
@@ -21,28 +22,33 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddDbContext<AppDbContext>();
+        builder.Services.AddDbContext<AppDbContext>(); //register db context
 
-        builder.Services.AddSingleton(new HttpClient
+        builder.Services.AddSingleton(new HttpClient //register api client
         {
             BaseAddress = new Uri("https://set09102-api.b-davison.workers.dev"),
             Timeout = TimeSpan.FromSeconds(30)
         });
 
+        //register token storage
         builder.Services.AddSingleton<ITokenProvider, MauiTokenProvider>();
 
+        //register repos
         builder.Services.AddSingleton<IItemRepository, ItemRepository>();
         builder.Services.AddSingleton<IRentalRepository, RentalRepository>();
 
+        //register services
         builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
         builder.Services.AddSingleton<IItemService, ItemService>();
         builder.Services.AddSingleton<IRentalService, RentalService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
 
+        //registers app shell
         builder.Services.AddSingleton<AppShellViewModel>();
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<App>();
 
+        //registers pages + viewmodels
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<ItemDetailViewModel>();
@@ -67,7 +73,7 @@ public static class MauiProgram
         builder.Services.AddTransient<TempPage>();
 
 #if DEBUG
-        builder.Logging.AddDebug();
+        builder.Logging.AddDebug(); //debug logging
 #endif
 
         return builder.Build();

@@ -1,7 +1,7 @@
 /// @file FakeTokenProvider.cs
 /// @brief Fake token provider for repository unit tests
 /// @author StarterApp Development Team
-/// @date 2025
+
 
 using StarterApp.Security;
 

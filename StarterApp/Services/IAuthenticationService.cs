@@ -2,6 +2,7 @@ using StarterApp.Database.Models;
 
 namespace StarterApp.Services;
 
+//defines the authentication actions and user state used by the app
 public interface IAuthenticationService
 {
     event EventHandler<bool>? AuthenticationStateChanged;
@@ -18,5 +19,6 @@ public interface IAuthenticationService
     bool HasAnyRole(params string[] roleNames);
     bool HasAllRoles(params string[] roleNames);
     
+    //changes the current user's password
     Task<bool> ChangePasswordAsync(string currentPassword, string newPassword);
 }

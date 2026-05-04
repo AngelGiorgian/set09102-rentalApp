@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace StarterApp.Models.Api;
 
+//item detail api model
 public sealed class ItemDetailDto
 {
     [JsonPropertyName("id")]
@@ -49,6 +50,7 @@ public sealed class ItemDetailDto
     [JsonPropertyName("createdAt")]
     public DateTime? CreatedAt { get; set; }
 
+    //formated daily prices, availability, ratings and owner ratings
     public string DailyRateText => $"£{DailyRate:0.00}/day";
     public string AvailabilityText => IsAvailable ? "Available" : "Unavailable";
     public string RatingText => AverageRating.HasValue ? $"★ {AverageRating.Value:0.0}" : "No ratings";

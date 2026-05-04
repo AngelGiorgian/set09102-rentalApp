@@ -6,6 +6,7 @@ using StarterApp.Models.Api;
 
 namespace StarterApp.Repositories;
 
+//handles item api calls
 public class ItemRepository : IItemRepository
 {
     private readonly HttpClient _httpClient;
@@ -23,6 +24,7 @@ public class ItemRepository : IItemRepository
         _tokenProvider = tokenProvider;
     }
 
+    //gets items
     public async Task<ItemsResponse?> GetItemsAsync(
         string? category = null,
         string? search = null,
@@ -61,6 +63,7 @@ public class ItemRepository : IItemRepository
         return await response.Content.ReadFromJsonAsync<ItemsResponse>(_jsonOptions);
     }
 
+    //gets item by id
     public async Task<ItemDetailDto?> GetItemByIdAsync(int itemId)
     {
         using var response = await _httpClient.GetAsync($"/items/{itemId}");
@@ -73,6 +76,7 @@ public class ItemRepository : IItemRepository
         return await response.Content.ReadFromJsonAsync<ItemDetailDto>(_jsonOptions);
     }
 
+    //creates item
     public async Task<(bool IsSuccess, string Message)> CreateItemAsync(CreateItemRequest request)
     {
         try
@@ -83,6 +87,7 @@ public class ItemRepository : IItemRepository
                 return (false, "You are not logged in.");
             }
 
+            //adds auth token
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/items");
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             httpRequest.Content = new StringContent(
@@ -111,6 +116,7 @@ public class ItemRepository : IItemRepository
         }
     }
 
+    //updates item
     public async Task<(bool IsSuccess, string Message)> UpdateItemAsync(int itemId, CreateItemRequest request)
     {
         try
@@ -121,6 +127,7 @@ public class ItemRepository : IItemRepository
                 return (false, "You are not logged in.");
             }
 
+            //adds auth token
             using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"/items/{itemId}");
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             httpRequest.Content = new StringContent(
@@ -149,6 +156,7 @@ public class ItemRepository : IItemRepository
         }
     }
 
+    //gets categories
     public async Task<List<CategoryDto>> GetCategoriesAsync()
     {
         try
@@ -168,11 +176,13 @@ public class ItemRepository : IItemRepository
 
             using var document = JsonDocument.Parse(raw);
 
+            //handles array response
             if (document.RootElement.ValueKind == JsonValueKind.Array)
             {
                 return JsonSerializer.Deserialize<List<CategoryDto>>(raw, _jsonOptions) ?? new List<CategoryDto>();
             }
 
+            //handles wrapped response
             if (document.RootElement.ValueKind == JsonValueKind.Object &&
                 document.RootElement.TryGetProperty("categories", out var categoriesElement))
             {

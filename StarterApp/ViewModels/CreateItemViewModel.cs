@@ -7,6 +7,7 @@ using StarterApp.Services;
 
 namespace StarterApp.ViewModels;
 
+//handles create and edit item screen logic
 public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IItemService _itemService;
@@ -52,6 +53,7 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
         _ = LoadCategoriesAsync();
     }
 
+    //loads edit mode data
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("ItemId", out var itemIdValue))
@@ -82,6 +84,7 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //loads categories
     private async Task LoadCategoriesAsync()
     {
         try
@@ -115,6 +118,7 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //loads item for editing
     private async Task LoadExistingItemAsync(int itemId)
     {
         try
@@ -161,6 +165,7 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //saves item
     [RelayCommand]
     private async Task SaveAsync()
     {
@@ -169,6 +174,7 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
             IsBusy = true;
             ClearError();
 
+            //checks required fields
             if (string.IsNullOrWhiteSpace(TitleText) ||
                 string.IsNullOrWhiteSpace(DescriptionText) ||
                 string.IsNullOrWhiteSpace(DailyRateText) ||
@@ -180,24 +186,28 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
                 return;
             }
 
+            //checks daily rate
             if (!decimal.TryParse(DailyRateText, NumberStyles.Number, CultureInfo.InvariantCulture, out var dailyRate))
             {
                 SetError("Daily rate must be a valid number, for example 12.50");
                 return;
             }
 
+            //checks latitude
             if (!double.TryParse(LatitudeText, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitude))
             {
                 SetError("Latitude must be a valid number.");
                 return;
             }
 
+            //checks longitude
             if (!double.TryParse(LongitudeText, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitude))
             {
                 SetError("Longitude must be a valid number.");
                 return;
             }
 
+            //builds api request
             var request = new CreateItemRequest
             {
                 Title = TitleText.Trim(),
@@ -242,12 +252,14 @@ public partial class CreateItemViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
+    //cancels form
     [RelayCommand]
     private async Task CancelAsync()
     {
         await _navigationService.NavigateBackAsync();
     }
 
+    //reloads categories
     [RelayCommand]
     private async Task ReloadCategoriesAsync()
     {

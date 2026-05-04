@@ -1,7 +1,6 @@
 /// @file FakeHttpMessageHandler.cs
 /// @brief Fake HTTP message handler for repository unit tests
 /// @author StarterApp Development Team
-/// @date 2025
 
 using System.Net;
 using System.Net.Http;

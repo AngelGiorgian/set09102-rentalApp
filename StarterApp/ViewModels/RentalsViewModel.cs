@@ -6,6 +6,7 @@ using StarterApp.Services;
 
 namespace StarterApp.ViewModels;
 
+//handles rentals screen logic
 public partial class RentalsViewModel : BaseViewModel
 {
     private readonly IRentalService _rentalService;
@@ -29,7 +30,7 @@ public partial class RentalsViewModel : BaseViewModel
         _ = RefreshDataAsync();
     }
 
-    [RelayCommand]
+    [RelayCommand] //loads rental data
     private async Task RefreshDataAsync()
     {
         try
@@ -68,7 +69,7 @@ public partial class RentalsViewModel : BaseViewModel
         }
     }
 
-    [RelayCommand]
+    [RelayCommand] //aproves rental
     private async Task ApproveIncomingRentalAsync(RentalSummaryDto? rental)
     {
         await UpdateIncomingRentalStatusAsync(
@@ -78,7 +79,7 @@ public partial class RentalsViewModel : BaseViewModel
             "Are you sure you want to approve this rental request?");
     }
 
-    [RelayCommand]
+    [RelayCommand] //rejects rental data
     private async Task RejectIncomingRentalAsync(RentalSummaryDto? rental)
     {
         await UpdateIncomingRentalStatusAsync(
@@ -88,7 +89,7 @@ public partial class RentalsViewModel : BaseViewModel
             "Are you sure you want to reject this rental request?");
     }
 
-    [RelayCommand]
+    [RelayCommand] //starts rental
     private async Task StartIncomingRentalAsync(RentalSummaryDto? rental)
     {
         await UpdateIncomingRentalStatusAsync(
@@ -98,7 +99,7 @@ public partial class RentalsViewModel : BaseViewModel
             "Mark this rental as Out for Rent?");
     }
 
-    [RelayCommand]
+    [RelayCommand] //marks incoming items returned
     private async Task MarkIncomingReturnedAsync(RentalSummaryDto? rental)
     {
         await UpdateIncomingRentalStatusAsync(
@@ -108,6 +109,7 @@ public partial class RentalsViewModel : BaseViewModel
             "Mark this rental as Returned?");
     }
 
+    //updates incoming status
     private async Task UpdateIncomingRentalStatusAsync(
         RentalSummaryDto? rental,
         string newStatus,
@@ -160,7 +162,7 @@ public partial class RentalsViewModel : BaseViewModel
         }
     }
 
-    [RelayCommand]
+    [RelayCommand] //mark outgoing rentals returned
     private async Task MarkOutgoingReturnedAsync(RentalSummaryDto? rental)
     {
         if (rental is null)
@@ -209,7 +211,7 @@ public partial class RentalsViewModel : BaseViewModel
         }
     }
 
-    [RelayCommand]
+    [RelayCommand] //go back to previous page
     private async Task GoBackAsync()
     {
         await _navigationService.NavigateBackAsync();

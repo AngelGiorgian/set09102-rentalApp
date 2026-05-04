@@ -1,7 +1,7 @@
 /// @file ItemRepositoryTests.cs
 /// @brief Unit tests for the item repository
 /// @author StarterApp Development Team
-/// @date 2025
+
 
 using System.Net;
 using System.Text;
@@ -36,7 +36,7 @@ public class ItemRepositoryTests
     [Fact]
     public async Task GetCategoriesAsync_ReturnsCategories_WhenResponseIsArray()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = _ => new HttpResponseMessage(HttpStatusCode.OK)
@@ -56,10 +56,10 @@ public class ItemRepositoryTests
         var tokenProvider = new FakeTokenProvider();
         var repository = CreateRepository(handler, tokenProvider);
 
-        // Act
+        //act
         var result = await repository.GetCategoriesAsync();
 
-        // Assert
+        //assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
         Assert.Equal(1, result[0].Id);
@@ -68,12 +68,12 @@ public class ItemRepositoryTests
         Assert.Equal("Music", result[1].Name);
     }
 
-    /// @brief Tests that GetCategoriesAsync returns categories from a wrapped JSON object
+    /// @brief GetCategoriesAsync returns categories from a wrapped JSON object
     /// @details Verifies that the repository correctly parses a response containing a "categories" property
     [Fact]
     public async Task GetCategoriesAsync_ReturnsCategories_WhenResponseContainsCategoriesProperty()
     {
-        // Arrange
+        //arrantge
         var handler = new FakeHttpMessageHandler
         {
             Handler = _ => new HttpResponseMessage(HttpStatusCode.OK)
@@ -94,10 +94,10 @@ public class ItemRepositoryTests
         var tokenProvider = new FakeTokenProvider();
         var repository = CreateRepository(handler, tokenProvider);
 
-        // Act
+        //act
         var result = await repository.GetCategoriesAsync();
 
-        // Assert
+        //assert
         Assert.Single(result);
         Assert.Equal(3, result[0].Id);
         Assert.Equal("Games", result[0].Name);
@@ -108,7 +108,7 @@ public class ItemRepositoryTests
     [Fact]
     public async Task GetItemsAsync_ReturnsItems_WhenResponseIsValid()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = request =>
@@ -152,10 +152,10 @@ public class ItemRepositoryTests
         var tokenProvider = new FakeTokenProvider();
         var repository = CreateRepository(handler, tokenProvider);
 
-        // Act
+        //act
         var result = await repository.GetItemsAsync(page: 1, pageSize: 20);
 
-        // Assert
+        //assert
         Assert.NotNull(result);
         Assert.Single(result.Items);
         Assert.Equal(1, result.TotalItems);
@@ -169,7 +169,7 @@ public class ItemRepositoryTests
     [Fact]
     public async Task CreateItemAsync_ReturnsError_WhenNoTokenIsAvailable()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler();
         var tokenProvider = new FakeTokenProvider { Token = null };
         var repository = CreateRepository(handler, tokenProvider);
@@ -184,10 +184,10 @@ public class ItemRepositoryTests
             Longitude = -3.18
         };
 
-        // Act
+        //act
         var result = await repository.CreateItemAsync(request);
 
-        // Assert
+        //assert
         Assert.False(result.IsSuccess);
         Assert.Equal("You are not logged in.", result.Message);
     }
@@ -197,7 +197,7 @@ public class ItemRepositoryTests
     [Fact]
     public async Task CreateItemAsync_ReturnsSuccess_WhenApiReturnsSuccess()
     {
-        // Arrange
+        //arrange
         var handler = new FakeHttpMessageHandler
         {
             Handler = request =>
@@ -228,10 +228,10 @@ public class ItemRepositoryTests
             Longitude = -3.18
         };
 
-        // Act
+        //act
         var result = await repository.CreateItemAsync(request);
 
-        // Assert
+        //assert
         Assert.True(result.IsSuccess);
         Assert.Equal("Item created successfully.", result.Message);
     }

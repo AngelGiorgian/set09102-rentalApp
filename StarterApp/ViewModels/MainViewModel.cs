@@ -179,7 +179,7 @@ public partial class MainViewModel : BaseViewModel
             IsBusy = false;
         }
     }
-
+    //opens item details task
     [RelayCommand]
     private async Task OpenItemDetailAsync(ItemSummaryDto? item)
     {
@@ -202,7 +202,7 @@ public partial class MainViewModel : BaseViewModel
         await _navigationService.NavigateToAsync(nameof(CreateItemPage));
     }
 
-    [RelayCommand]
+    [RelayCommand] //opens rentals page
     private async Task NavigateToRentalsAsync()
     {
         await _navigationService.NavigateToAsync(nameof(RentalsPage));

@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace StarterApp.Models.Api;
 
+//create rental api request
 public sealed class CreateRentalRequest
 {
     [JsonPropertyName("itemId")]
@@ -15,12 +16,14 @@ public sealed class CreateRentalRequest
     public string EndDate { get; set; } = string.Empty;
 }
 
+//update rental status request
 public sealed class UpdateRentalStatusRequest
 {
     [JsonPropertyName("status")]
     public string Status { get; set; } = string.Empty;
 }
 
+//rental summary api model
 public sealed class RentalSummaryDto
 {
     public int Id { get; set; }
@@ -38,6 +41,7 @@ public sealed class RentalSummaryDto
     public string BorrowerName { get; set; } = string.Empty;
     public string OwnerName { get; set; } = string.Empty;
 
+    //formatted dates
     public string StartDateText => StartDate?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "N/A";
     public string EndDateText => EndDate?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "N/A";
     public string RequestedAtText => RequestedAt?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "N/A";
@@ -45,11 +49,13 @@ public sealed class RentalSummaryDto
     public string TotalPriceText => TotalPrice.HasValue ? $"£{TotalPrice.Value:0.00}" : "Price not available";
     public string StatusText => string.IsNullOrWhiteSpace(Status) ? "Unknown" : Status;
 
+    //formatted rental info
     public bool IsRequested => MatchesStatus("Requested");
     public bool IsApproved => MatchesStatus("Approved");
     public bool IsOutForRent => MatchesStatus("Out for Rent") || MatchesStatus("OutForRent");
     public bool IsReturned => MatchesStatus("Returned");
 
+    //status checks
     private bool MatchesStatus(string expected)
     {
         return string.Equals(
@@ -58,6 +64,7 @@ public sealed class RentalSummaryDto
             StringComparison.OrdinalIgnoreCase);
     }
 
+    //cleans status text
     private static string NormalizeStatus(string value)
     {
         return value.Replace(" ", string.Empty).Trim();

@@ -7,15 +7,15 @@ using StarterApp.Security;
 
 namespace StarterApp.Security;
 
-/// @brief Retrieves tokens from MAUI SecureStorage
-/// @details Provides the current authentication token to repository classes
+/// @brief retrieves tokens from MAUI SecureStorage
+/// @details authentication token to repository classes
 public class MauiTokenProvider : ITokenProvider
 {
-    /// @brief Secure storage key used for the authentication token
+    /// @brief key used for the authentication token
     private const string AuthTokenKey = "auth_token";
 
-    /// @brief Gets the current authentication token from secure storage
-    /// @return The stored token, or null if not found
+    /// @brief gets the current authentication token from secure storage
+    /// @return stored token, or null if not found
     public Task<string?> GetTokenAsync()
     {
         return SecureStorage.Default.GetAsync(AuthTokenKey);

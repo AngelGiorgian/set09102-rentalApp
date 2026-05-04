@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace StarterApp.Models.Api;
 
+//category api model
 public sealed class CategoryDto
 {
     [JsonPropertyName("id")]
@@ -10,5 +11,5 @@ public sealed class CategoryDto
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
-    public string DisplayName => Name;
+    public string DisplayName => Name; //shown in category pickker
 }
