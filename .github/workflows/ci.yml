@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Build Core and Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # @brief Checks out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # @brief Installs the required .NET SDK version
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # @brief Restores dependencies for the core library
+      - name: Restore StarterApp.Core
+        run: dotnet restore StarterApp.Core/StarterApp.Core.csproj
+
+      # @brief Restores dependencies for the test project
+      - name: Restore StarterApp.Tests
+        run: dotnet restore StarterApp.Tests/StarterApp.Tests.csproj
+
+      # @brief Builds the core project in Release configuration
+      - name: Build StarterApp.Core
+        run: dotnet build StarterApp.Core/StarterApp.Core.csproj --configuration Release --no-restore
+
+      # @brief Runs the xUnit test suite
+      - name: Run StarterApp.Tests
+        run: dotnet test StarterApp.Tests/StarterApp.Tests.csproj --configuration Release --no-restore --verbosity normal
