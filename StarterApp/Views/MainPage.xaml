@@ -2,197 +2,171 @@
 <ContentPage x:Class="StarterApp.Views.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:StarterApp.ViewModels"
+             xmlns:api="clr-namespace:StarterApp.Models.Api"
              Title="{Binding Title}">
 
-    <ContentPage.BindingContext>
-        <vm:MainViewModel />
-    </ContentPage.BindingContext>
-
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Profile" 
+        <ToolbarItem Text="Profile"
                      Command="{Binding NavigateToProfileCommand}"
                      IconImageSource="user.png" />
-        <ToolbarItem Text="Settings" 
+        <ToolbarItem Text="Settings"
                      Command="{Binding NavigateToSettingsCommand}"
                      IconImageSource="settings.png" />
-        <ToolbarItem Text="Logout" 
+        <ToolbarItem Text="Add"
+             Command="{Binding NavigateToCreateItemCommand}" />
+        <ToolbarItem Text="Rentals"
+             Command="{Binding NavigateToRentalsCommand}" />
+        <ToolbarItem Text="Logout"
                      Command="{Binding LogoutCommand}"
                      IconImageSource="logout.png" />
     </ContentPage.ToolbarItems>
 
-    <RefreshView IsRefreshing="{Binding IsBusy}" 
+    <RefreshView IsRefreshing="{Binding IsBusy}"
                  Command="{Binding RefreshDataCommand}">
-        <ScrollView>
-            <Grid Padding="20" RowSpacing="20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+        <Grid Padding="20" RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-                <!-- Welcome Section -->
-                <Border Grid.Row="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                        Padding="20"
-                        HeightRequest="120">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <StackLayout VerticalOptions="Center">
-                        <Label Text="{Binding WelcomeMessage}"
-                               FontSize="24"
-                               FontAttributes="Bold"
-                               TextColor="White"
-                               HorizontalOptions="Center" />
-                        <Label Text="{Binding CurrentUser.Email}"
-                               FontSize="14"
-                               TextColor="White"
-                               Opacity="0.8"
-                               HorizontalOptions="Center" />
-                    </StackLayout>
-                </Border>
+            <Border Grid.Row="0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    Padding="20"
+                    HeightRequest="120">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout VerticalOptions="Center">
+                    <Label Text="{Binding WelcomeMessage}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <Label Text="{Binding CurrentUser.Email}"
+                           FontSize="14"
+                           TextColor="White"
+                           Opacity="0.8"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
 
-                <!-- Error Display -->
-                <Border Grid.Row="1"
-                        BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
-                        Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
-                        StrokeThickness="1"
-                        Padding="15"
-                        IsVisible="{Binding HasError}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="8" />
-                    </Border.StrokeShape>
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="{Binding ErrorMessage}"
-                               TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
-                               FontSize="14"
-                               VerticalOptions="Center"
-                               HorizontalOptions="StartAndExpand" />
-                        <Button Text="×"
-                                Command="{Binding ClearErrorCommand}"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
-                                FontSize="18"
-                                Padding="5"
-                                WidthRequest="30"
-                                HeightRequest="30" />
-                    </StackLayout>
-                </Border>
+            <Border Grid.Row="1"
+                    BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
+                    Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    IsVisible="{Binding HasError}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout>
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                           FontSize="14"
+                           VerticalOptions="Center"
+                           HorizontalOptions="StartAndExpand" />
+                    <Button Text="×"
+                            Command="{Binding ClearErrorCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                            FontSize="18"
+                            Padding="5"
+                            WidthRequest="30"
+                            HeightRequest="30" />
+                </HorizontalStackLayout>
+            </Border>
 
-                <!-- Quick Actions -->
-                <Label Grid.Row="2"
-                       Text="Quick Actions"
+            <VerticalStackLayout Grid.Row="2" Spacing="4">
+                <Label Text="Available Items"
                        FontSize="20"
-                       FontAttributes="Bold"
-                       Margin="0,10,0,10" />
+                       FontAttributes="Bold" />
+                <Label Text="{Binding ItemsSummary}"
+                       FontSize="13"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            </VerticalStackLayout>
 
-                <!-- Action Cards -->
-                <StackLayout Grid.Row="3" Spacing="15">
-                    
-                    <!-- Profile Card -->
-                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
-                            StrokeThickness="1"
-                            Padding="20"
-                            HeightRequest="80">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateToProfileCommand}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*,Auto">
-                            <Label Grid.Column="0"
-                                   Text="👤"
-                                   FontSize="24"
-                                   VerticalOptions="Center" />
-                            <StackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                                <Label Text="Profile Settings"
-                                       FontSize="16"
-                                       FontAttributes="Bold" />
-                                <Label Text="Manage your account information"
+            <HorizontalStackLayout Grid.Row="3" Spacing="12">
+                <Button Text="Profile"
+                        Command="{Binding NavigateToProfileCommand}" />
+                <Button Text="Settings"
+                        Command="{Binding NavigateToSettingsCommand}" />
+                <Button Text="Rentals"
+                        Command="{Binding NavigateToRentalsCommand}" />
+            </HorizontalStackLayout>
+
+            <CollectionView Grid.Row="4"
+                            ItemsSource="{Binding Items}"
+                            SelectionMode="None"
+                            Margin="0,8,0,0">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="20" Spacing="8">
+                        <Label Text="No items available"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="Pull down to refresh or try again later."
+                               FontSize="14"
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="api:ItemSummaryDto">
+                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                                StrokeThickness="1"
+                                Padding="16"
+                                Margin="0,0,0,12">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenItemDetailCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Title}"
+                                           FontSize="18"
+                                           FontAttributes="Bold" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding DailyRateText}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" />
+                                </Grid>
+
+                                <Label Text="{Binding Description}"
+                                       FontSize="14"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}" />
+
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding Category}"
+                                           FontSize="12" />
+                                    <Label Text="{Binding OwnerName}"
+                                           FontSize="12" />
+                                    <Label Text="{Binding RatingText}"
+                                           FontSize="12" />
+                                </HorizontalStackLayout>
+
+                                <Label Text="{Binding AvailabilityText}"
                                        FontSize="12"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                            </StackLayout>
-                            <Label Grid.Column="2"
-                                   Text=">"
-                                   FontSize="18"
-                                   VerticalOptions="Center"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray600}}" />
-                        </Grid>
-                    </Border>
-
-                    <!-- Settings Card -->
-                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
-                            StrokeThickness="1"
-                            Padding="20"
-                            HeightRequest="80">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateToSettingsCommand}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*,Auto">
-                            <Label Grid.Column="0"
-                                   Text="⚙️"
-                                   FontSize="24"
-                                   VerticalOptions="Center" />
-                            <StackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                                <Label Text="App Settings"
-                                       FontSize="16"
-                                       FontAttributes="Bold" />
-                                <Label Text="Configure app preferences"
-                                       FontSize="12"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                            </StackLayout>
-                            <Label Grid.Column="2"
-                                   Text=">"
-                                   FontSize="18"
-                                   VerticalOptions="Center"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray600}}" />
-                        </Grid>
-                    </Border>
-
-                    <!-- Users Card (Only visible for admins) -->
-                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
-                            StrokeThickness="1"
-                            Padding="20"
-                            HeightRequest="80"
-                            IsVisible="{Binding IsAdmin}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateToUserListCommand}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*,Auto">
-                            <Label Grid.Column="0"
-                                   Text="🔐"
-                                   FontSize="24"
-                                   VerticalOptions="Center" />
-                            <StackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                                <Label Text="User management"
-                                       FontSize="16"
-                                       FontAttributes="Bold" />
-                                <Label Text="Manage users and their roles"
-                                       FontSize="12"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                            </StackLayout>
-                            <Label Grid.Column="2"
-                                   Text=">"
-                                   FontSize="18"
-                                   VerticalOptions="Center"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray600}}" />
-                        </Grid>
-                    </Border>
-
-                </StackLayout>
-            </Grid>
-        </ScrollView>
+                                       TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
     </RefreshView>
 </ContentPage>

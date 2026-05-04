@@ -67,6 +67,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="../StarterApp.Database/StarterApp.Database.csproj" />
+	  <ProjectReference Include="..\StarterApp.Core\StarterApp.Core.csproj" />
 	</ItemGroup>
 
 </Project>

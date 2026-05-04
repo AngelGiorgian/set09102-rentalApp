@@ -2,8 +2,9 @@ using Microsoft.Extensions.Logging;
 using StarterApp.ViewModels;
 using StarterApp.Database.Data;
 using StarterApp.Views;
-using System.Diagnostics;
 using StarterApp.Services;
+using StarterApp.Repositories;
+using StarterApp.Security;
 
 namespace StarterApp;
 
@@ -22,7 +23,20 @@ public static class MauiProgram
 
         builder.Services.AddDbContext<AppDbContext>();
 
+        builder.Services.AddSingleton(new HttpClient
+        {
+            BaseAddress = new Uri("https://set09102-api.b-davison.workers.dev"),
+            Timeout = TimeSpan.FromSeconds(30)
+        });
+
+        builder.Services.AddSingleton<ITokenProvider, MauiTokenProvider>();
+
+        builder.Services.AddSingleton<IItemRepository, ItemRepository>();
+        builder.Services.AddSingleton<IRentalRepository, RentalRepository>();
+
         builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+        builder.Services.AddSingleton<IItemService, ItemService>();
+        builder.Services.AddSingleton<IRentalService, RentalService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
 
         builder.Services.AddSingleton<AppShellViewModel>();
@@ -31,6 +45,16 @@ public static class MauiProgram
 
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<ItemDetailViewModel>();
+        builder.Services.AddTransient<ItemDetailPage>();
+        builder.Services.AddTransient<CreateItemViewModel>();
+        builder.Services.AddTransient<CreateItemPage>();
+        builder.Services.AddTransient<RentalsViewModel>();
+        builder.Services.AddTransient<RentalsPage>();
+        builder.Services.AddTransient<ProfileViewModel>();
+        builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddSingleton<LoginViewModel>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddSingleton<RegisterViewModel>();
